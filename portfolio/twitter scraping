@@ -1,0 +1,34 @@
+import tweepy
+from tweepy import OAuthHandler
+ 
+consumer_key = '2CF7cCOZTWiJUwGGsqQz84AkA'
+consumer_secret = 'LQsjX5ZtWZ7GSaRMZsg7vLYQzYn5DjhCm31dfm1D0JqCYCytUt'
+access_token = '968928699805450240-Qcb33pNIOXrigyxaYx11aZsf2MpEWrR'
+access_secret = 'XjolWzMJNyMPvbHk3FvgYIVAIrl8P8I58jcABJIU5xYCf'
+ 
+auth = OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_secret)
+ 
+api = tweepy.API(auth)
+api.update_status(status='test')
+
+from tweepy import Stream
+from tweepy.streaming import StreamListener
+
+class MyListener(StreamListener):
+
+    def on_data(self, data):
+        try:
+            with open('twitter_tech.json', 'a') as f:
+                f.write(data)
+                return True
+        except BaseException as e:
+            print("Error on_data: %s" % str(e))
+        return True
+
+    def on_error(self, status):
+        print(status)
+        return True
+
+twitter_stream = Stream(auth, MyListener())
+twitter_stream.filter(track=['#technology'])
